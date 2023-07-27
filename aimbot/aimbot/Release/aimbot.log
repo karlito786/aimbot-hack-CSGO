@@ -1,2 +1,13 @@
 ﻿  main.cpp
-C:\Users\Korisnik\Desktop\aimbot\aimbot\main.cpp(13,1): error C2143: syntax error: missing ';' before '}'
+  Generating code
+  Previous IPDB not found, fall back to full compilation.
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(30): warning C4172: returning address of local variable or temporary
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(15): warning C4172: returning address of local variable or temporary
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(25): warning C4172: returning address of local variable or temporary
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(20): warning C4172: returning address of local variable or temporary
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(35): warning C4172: returning address of local variable or temporary
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(11): warning C4723: potential divide by 0
+C:\Users\Korisnik\Desktop\aimbot\aimbot\vector.h(11): warning C4723: potential divide by 0
+  All 78 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  aimbot.vcxproj -> C:\Users\Korisnik\Desktop\aimbot\Release\aimbot.exe

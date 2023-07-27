@@ -45,6 +45,72 @@ int main()
 	while (true)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		// Aimbot keybind
+		if (!GetAsyncKeyState(VK_RBUTTON))
+			continue;
+
+		// Get local player
+		const auto& localPlayer = memory.Read<std::uintptr_t>(client + offset::dwLocalPlayer);
+		const auto& localTeam = memory.Read<std::int32_t>(localPlayer + offset::m_iTeamNum);
+
+		// eye position = origin + viewOffset
+		const auto localEyePosition = memory.Read<Vector3>(localPlayer + offset::m_vecOrigin) +
+			memory.Read<Vector3>(localPlayer + offset::m_vecViewOffset);
+
+		const auto& clientState = memory.Read<std::uintptr_t>(engine + offset::dwClientState);
+
+		const auto& viewAngles = memory.Read<Vector3>(clientState + offset::dwClientState_ViewAngles);
+		const auto& aimPunch = memory.Read<Vector3>(localPlayer + offset::m_aimPunchAngle) * 2;
+
+		// Aimbot FOV
+		auto bestFov = 5.f;
+		auto bestAngle = Vector3{ };
+
+		for (auto i = 1; i <= 32; ++i)
+		{
+			const auto& player = memory.Read<std::uintptr_t>(client + offset::dwEntityList + i * 0x10);
+
+			// Entity checks
+			if (memory.Read<std::int32_t>(player + offset::m_iTeamNum) == localTeam)
+				continue;
+
+			if (memory.Read<bool>(player + offset::m_bDormant))
+				continue;
+
+			if (!memory.Read<std::int32_t>(player + offset::m_iHealth))
+				continue;
+
+			if (!memory.Read<bool>(player + offset::m_bSpottedbyMask))
+				continue;
+			
+			const auto boneMatix = memory.Read<std::uintptr_t>(player + offset::m_dwBoneMatrix);
+
+			// Position of the player head in 3d space
+			const auto playerHeadPosition = Vector3{
+				memory.Read<float>(boneMatix + 0x30 * 8 + 0x0C),
+				memory.Read<float>(boneMatix + 0x30 * 8 + 0x1C),
+				memory.Read<float>(boneMatix + 0x30 * 8 + 0x2C)
+			};
+
+			const auto angle = CalculateAngle(
+				localEyePosition,
+				playerHeadPosition,
+				viewAngles + aimPunch
+			);
+
+			const auto fov = std::hypot(angle.x, angle.y);
+
+			if (fov < bestFov)
+			{
+				bestFov = fov;
+				bestAngle = angle;
+			}
+		}
+
+		// If we have the best angle
+		// do aimbot
+		if (!bestAngle.IsZero())
+			memory.Write<Vector3>(clientState + offset::dwClientState_ViewAngles, viewAngles + bestAngle / 3.f);
 	}
 
 	return 0;
